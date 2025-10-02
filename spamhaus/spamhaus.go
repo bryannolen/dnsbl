@@ -1,4 +1,4 @@
-// package spamhaus provides an mechanism to query the Spamhaus DNS RBL.
+// package spamhaus provides an mechanism to query the Spamhaus Zen DNSBL.
 package spamhaus
 
 import (
@@ -46,7 +46,7 @@ func reverseIP(ip string) (string, error) {
 	return reverseIP.String(), nil
 }
 
-// QueryIP takes an IP address to query and the ip address to use as the DNS resolver as strings, and returns a slice of results from SpamHaus RBL.
+// QueryIP takes an IP address to query and the ip address to use as the DNS resolver as strings, and returns a slice of results from SpamHaus Zen DNSBL.
 func QueryByIP(queryIP, resolver string) ([]string, error) {
 	if queryIP == "" || resolver == "" {
 		return nil, fmt.Errorf("queryIP or resolver cannot be empty")
