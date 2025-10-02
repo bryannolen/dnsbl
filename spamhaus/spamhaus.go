@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/netip"
 	"slices"
+	"strings"
 )
 
 const (
@@ -20,11 +21,21 @@ const (
 
 // customLookupHost performs a DNS lookup for a hostname using a custom DNS resolver.
 func customLookupHost(hostname, resolver string) ([]string, error) {
+	addr := resolver
+	if strings.Count(resolver, ":") > 1 && !strings.Contains(resolver, "]") {
+		// Assume we were passed an IPv6 address without a port.
+		addr = net.JoinHostPort(resolver, "53")
+	}
+	if strings.Count(resolver, ":") == 0 {
+		// The address passed contains no :, so is not IPv6 and does not include a port.
+		addr = net.JoinHostPort(resolver, "53")
+	}
+
 	r := &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
 			d := net.Dialer{}
-			return d.DialContext(ctx, "udp", net.JoinHostPort(resolver, "53"))
+			return d.DialContext(ctx, "udp", addr)
 		},
 	}
 	return r.LookupHost(context.Background(), hostname)
